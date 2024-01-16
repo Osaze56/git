@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart List</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to right, #4e54c8, #8f94fb);
+            color: #333;
+        }
+        table {
+            border-collapse: collapse;
+            width: 50%;
+            margin: 20px auto;
+            background-color: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        #total {
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px;
+            margin: 5px;
+            cursor: pointer;
+            border: none;
+            background-color: #4caf50;
+            color: #fff;
+            border-radius: 4px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+        /* for c loader */
+        /* Center the loader */
+    #loader {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        z-index: 1;
+        width: 120px;
+        height: 120px;
+        margin: -76px 0 0 -76px;
+        border: 16px solid #f3f3f3;
+        border-radius: 50%;
+        border-top: 16px solid rgb(18, 2, 82);
+        -webkit-animation: spin 2s linear infinite;
+        animation: spin 2s linear infinite;
+    }
+
+    @-webkit-keyframes spin {
+        0% { -webkit-transform: rotate(0deg); }
+        100% { -webkit-transform: rotate(360deg); }
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    /* Add animation to "page content" */
+    .animate-bottom {
+        position: relative;
+        -webkit-animation-name: animatebottom;
+        -webkit-animation-duration: 1s;
+        animation-name: animatebottom;
+        animation-duration: 1s
+    }
+
+    @-webkit-keyframes animatebottom {
+        from { bottom:-100px; opacity:0 } 
+        to { bottom:0px; opacity:1 }
+    }
+
+    @keyframes animatebottom { 
+        from{ bottom:-100px; opacity:0 } 
+        to{ bottom:0; opacity:1 }
+    }
+
+    #myDiv {
+        display: none;
+
+    }
+    #log-out span:hover{
+        background-color: rgb(4, 77, 4);
+        width: 90px;
+        height: 40px;
+        border-radius: 5px;
+    }
+    </style>
+    <!-- Add the html2pdf library -->
+    <script src="https://rawgit.com/eKoopmans/html2pdf/master/dist/html2pdf.bundle.js"></script>
+    <!-- google font -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+</head>
+<body onload="myFunction()" style="margin:0;">
+    <div id="loader"></div>
+
+<div style="display:none;" id="myDiv" class="animate-bottom">
+
+
+
+    <header style="
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        line-height: 60px;
+        background-color: #fff;
+        margin-bottom: 50px;
+        padding-left: 30px;
+        padding-right: 30px;
+        box-shadow: 2px 3px 4px rgba(0, 0, 0, 0.5);">
+        <div class="head-right">
+            <span><img style="
+                width: 60px;
+                height: 60px;
+                position: absolute;
+                display: flex;
+                align-items: center;
+                justify-content: center;" src="https://i.pinimg.com/736x/8a/61/10/8a61102f78f4a338baf081fc58a55404.jpg"></span>
+        <span style="margin-left: 70px;">Name</span>
+        </div>
+        <div class="head-right">
+            <span>Name</span>
+            <span>Logo</span>
+        </div>
+    </header>
+<table id="cart">
+    <thead>
+        <tr>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Total</th>
+            <th>Action</th> <!-- Added a new column for the Remove button -->
+        </tr>
+    </thead>
+    <tbody id="cartBody">
+        
+        <!-- Product rows will be dynamically added here -->
+    </tbody>
+</table>
+
+<button onclick="addProduct()">Add Product</button>
+<button onclick="generatePDF()">Save as PDF</button>
+
+<div id="total">
+    <strong style="color: #fff;">Total: &#8358;<span id="totalAmount">0.00</span></strong>
+</div>
+
+<!-- log out button -->
+    <div onclick="toggleLogOut()" id="log-out" style="
+    display: flex;
+    background-color: green;
+    color: #fff;
+    justify-content: center;
+    align-items: center;
+    width: 90px;
+    height: 40px;
+    border-radius: 5px;
+    position: fixed;
+    bottom: 10px;
+    right: 10px;">
+        <span style="
+        display:flex;
+        justify-content: center;
+        align-items: center;"><div id="iconn"><svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h280v80H200Zm440-160-55-58 102-102H360v-80h327L585-622l55-58 200 200-200 200Z"/></svg></div><a href="#" style="text-decoration: none; color: #fff;">Log Out</a></span>    
+</div>
+
+<script>
+    document.addEventListener('input', function (event) {
+        if (event.target.classList.contains('price-input') || event.target.classList.contains('quantity-input') || event.target.contentEditable) {
+            updateTotal();
+        }
+    });
+
+    function updateTotal() {
+        var totalAmount = 0;
+        var rows = document.querySelectorAll('#cartBody .product');
+
+        rows.forEach(function (row) {
+            var priceInput = row.querySelector('.price-input');
+            var quantityInput = row.querySelector('.quantity-input');
+            var totalSpan = row.querySelector('.total');
+
+            var price = parseFloat(priceInput.value) || 0;
+            var quantity = parseInt(quantityInput.value) || 0;
+
+            var total = price * quantity;
+            totalSpan.textContent = "₦" + total.toFixed(2);
+
+            totalAmount += total;
+        });
+
+        document.getElementById('totalAmount').textContent = totalAmount.toFixed(2);
+        saveCartToLocalStorage();
+    }
+
+    function addProduct() {
+        var tbody = document.getElementById('cartBody');
+        var newRow = tbody.insertRow();
+        newRow.className = 'product';
+
+        var cell1 = newRow.insertCell(0);
+        cell1.contentEditable = true;
+        cell1.textContent = 'New Product';
+
+        var cell2 = newRow.insertCell(1);
+        var priceInput = document.createElement('input');
+        priceInput.type = 'text';
+        priceInput.className = 'price-input';
+        priceInput.value = '0.00';
+        cell2.appendChild(priceInput);
+
+        var cell3 = newRow.insertCell(2);
+        var quantityInput = document.createElement('input');
+        quantityInput.type = 'number';
+        quantityInput.className = 'quantity-input';
+        quantityInput.value = '1';
+        quantityInput.min = '1';
+        cell3.appendChild(quantityInput);
+
+        var cell4 = newRow.insertCell(3);
+        var totalSpan = document.createElement('span');
+        totalSpan.className = 'total';
+        cell4.appendChild(totalSpan);
+
+        var cell5 = newRow.insertCell(4);
+        var removeButton = document.createElement('button');
+        removeButton.textContent = 'Remove';
+        removeButton.onclick = function () {
+            tbody.removeChild(newRow);
+            updateTotal();
+        };
+        cell5.appendChild(removeButton);
+
+        updateTotal();
+    }
+
+    function generatePDF() {
+        var cartContent = document.getElementById('cart').outerHTML;
+        html2pdf(cartContent, {
+            margin: 10,
+            filename: 'cart_list.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        });
+    }
+
+    function saveCartToLocalStorage() {
+        var cartData = [];
+        var rows = document.querySelectorAll('#cartBody .product');
+
+        rows.forEach(function (row) {
+            var nameCell = row.querySelector('td[contenteditable="true"]');
+            var priceInput = row.querySelector('.price-input');
+            var quantityInput = row.querySelector('.quantity-input');
+
+            var product = {
+                name: nameCell.textContent,
+                price: priceInput.value,
+                quantity: quantityInput.value
+            };
+
+            cartData.push(product);
+        });
+
+        localStorage.setItem('cart', JSON.stringify(cartData));
+    }
+
+    function loadCartFromLocalStorage() {
+        var cartData = localStorage.getItem('cart');
+        if (cartData) {
+            cartData = JSON.parse(cartData);
+            var tbody = document.getElementById('cartBody');
+
+            cartData.forEach(function (product) {
+                var newRow = tbody.insertRow();
+                newRow.className = 'product';
+
+                var cell1 = newRow.insertCell(0);
+                cell1.contentEditable = true;
+                cell1.textContent = product.name;
+
+                var cell2 = newRow.insertCell(1);
+                var priceInput = document.createElement('input');
+                priceInput.type = 'text';
+                priceInput.className = 'price-input';
+                priceInput.value = product.price;
+                cell2.appendChild(priceInput);
+
+                var cell3 = newRow.insertCell(2);
+                var quantityInput = document.createElement('input');
+                quantityInput.type = 'number';
+                quantityInput.className = 'quantity-input';
+                quantityInput.value = product.quantity;
+                quantityInput.min = '1';
+                cell3.appendChild(quantityInput);
+
+                var cell4 = newRow.insertCell(3);
+                var totalSpan = document.createElement('span');
+                totalSpan.className = 'total';
+                cell4.appendChild(totalSpan);
+
+                var cell5 = newRow.insertCell(4);
+                var removeButton = document.createElement('button');
+                removeButton.textContent = 'Remove';
+                removeButton.onclick = function () {
+                    tbody.removeChild(newRow);
+                    updateTotal();
+                };
+                cell5.appendChild(removeButton);
+            });
+
+            updateTotal();
+        }
+    }
+
+    loadCartFromLocalStorage();
+
+
+
+
+    // for loader screen
+    var myVar;
+
+    function myFunction() {
+        myVar = setTimeout(showPage, 3000);
+    }
+
+    function showPage() {
+        document.getElementById("loader").style.display = "none";
+        document.getElementById("myDiv").style.display = "block";
+    }
+
+    function toggleLogOut() {
+        var logOutButton = document.getElementById('log-out');
+        window.location.href = 'login.html';
+    }
+</script>
+
+</body>
+</html>

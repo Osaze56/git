@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #3498db;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        .error-message {
+            color: #ff0000;
+            margin-top: 10px;
+        }
+
+        .success-message {
+            color: #00cc00;
+            margin-top: 10px;
+        }
+
+        /* Add some styling for the checkbox */
+        #showPasswordCheckbox {
+            margin-top: 15px;
+            margin-bottom: 11px;
+            padding-top: 15px;
+            left: 178px;
+            position: absolute;
+            display: inline;
+            width: 30px;
+        }
+    </style>
+</head>
+<body>
+
+<form id="loginForm" onsubmit="return login()">
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username" required>
+
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" required>
+    <input type="checkbox" id="showPasswordCheckbox" onclick="togglePasswordVisibility()">
+    <label for="showPasswordCheckbox">Show Password</label>
+
+    <!-- <button type="button" onclick="checkPassword()">Check Password</button> -->
+
+    <p class="error-message" id="errorMessage"></p>
+    <p class="success-message" id="successMessage"></p>
+
+    <button type="submit">Login</button>
+</form>
+
+<script>
+    function togglePasswordVisibility() {
+        var passwordInput = document.getElementById('password');
+        var showPasswordCheckbox = document.getElementById('showPasswordCheckbox');
+
+        // Toggle the password field between text and password
+        passwordInput.type = showPasswordCheckbox.checked ? 'text' : 'password';
+    }
+
+    function checkPassword() {
+        var password = document.getElementById('password').value;
+        var successMessage = document.getElementById('successMessage');
+        var errorMessage = document.getElementById('errorMessage');
+
+        // Check if the password meets your criteria
+        if (password === 'correct_password') {
+            successMessage.textContent = 'Password is correct!';
+            errorMessage.textContent = ''; // Clear any previous error message
+        } else {
+            errorMessage.textContent = 'Incorrect password';
+            successMessage.textContent = ''; // Clear any previous success message
+        }
+    }
+
+    function login() {
+        var username = document.getElementById('username').value;
+        var password = document.getElementById('password').value;
+        var errorMessage = document.getElementById('errorMessage');
+
+        // Check if the username and password meet your criteria
+        if (username === 'admin' && password === 'admin') {
+            // Redirect to another page after a successful login
+            window.location.href = 'index.html';
+            return false;  // Prevent the form from submitting
+        } else {
+            // Display an error message and prevent the form submission
+            errorMessage.textContent = 'Invalid username or password';
+            return false;
+        }
+    }
+</script>
+
+</body>
+</html>
