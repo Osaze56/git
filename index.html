@@ -32,7 +32,7 @@
             background-color: #f2f2f2;
         }
 
-        #total {
+        strong {
             margin-top: 20px;
         }
         button {
@@ -142,28 +142,35 @@
             <span>Logo</span>
         </div>
     </header>
-<table id="cart">
-    <thead>
-        <tr>
-            <th>Product</th>
-            <th>Price</th>
-            <th>Quantity</th>
-            <th>Total</th>
-            <th>Action</th> <!-- Added a new column for the Remove button -->
-        </tr>
-    </thead>
-    <tbody id="cartBody">
+    <div id="cartStyle">
+        <table id="cart">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                    <th>Action</th> <!-- Added a new column for the Remove button -->
+                </tr>
+            </thead>
+            <tbody id="cartBody">
+                
+                <!-- Product rows will be dynamically added here -->
+            </tbody>
+            
+        </table>
         
-        <!-- Product rows will be dynamically added here -->
-    </tbody>
-</table>
+        <button onclick="addProduct()">Add Product</button>
+        <button onclick="generatePDF()">Save as PDF</button>
+        
+        <strong style="color: #000000; position: absolute; left:460px;">Total: &#8358;<span id="totalAmount">0.00</span></strong>
+        <!-- <div id="total">
+            <strong style="color: #e41818; position: absolute; left:200px;">Total: &#8358;<span id="totalAmount">0.00</span></strong>
+        </div> -->
+    </div>
+    <!-- <button onclick="addProduct()">Add Product</button>
+    <button onclick="generatePDF()">Save as PDF</button> -->
 
-<button onclick="addProduct()">Add Product</button>
-<button onclick="generatePDF()">Save as PDF</button>
-
-<div id="total">
-    <strong style="color: #fff;">Total: &#8358;<span id="totalAmount">0.00</span></strong>
-</div>
 
 <!-- log out button -->
     <div onclick="toggleLogOut()" id="log-out" style="
@@ -255,7 +262,7 @@
     }
 
     function generatePDF() {
-        var cartContent = document.getElementById('cart').outerHTML;
+        var cartContent = document.getElementById('cartStyle').outerHTML;
         html2pdf(cartContent, {
             margin: 10,
             filename: 'cart_list.pdf',
@@ -263,6 +270,7 @@
             html2canvas: { scale: 2 },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
         });
+        
     }
 
     function saveCartToLocalStorage() {
